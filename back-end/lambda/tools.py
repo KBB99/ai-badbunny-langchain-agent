@@ -6,6 +6,9 @@ from langchain.schema import (
 )
 import requests
 import os
+import pprint
+
+pp = pprint.PrettyPrinter(depth=2)
 
 yonaguni = """Vi que viste mi story y subiste una pa' mí
 Yo que me iba a dormir, ey
@@ -69,27 +72,47 @@ class Tools():
         return created_rap.content
     
     def search_ticket_master(self, input):
-        url = "https://app.ticketmaster.com/discovery/v2/events.json"
-        params = {
-            "apikey": os.environ["TICKET_MASTER_API_KEY"],
-            "size": 5,
-            "keyword": input
-        }
-        response = requests.get(url, params=params)
-        response.raise_for_status()
-        events = response.json()
-        event_list = []
-        if "_embedded" not in events:
-            return "There are no events for that search."
-        for event in events["_embedded"]["events"]:
-            start_date = event["dates"]["start"]["localDate"]
-            start_time = event["dates"]["start"]["localTime"]
-            timezone = event["dates"]["timezone"]
-            name = event["name"]
-            price_range = str(event["priceRanges"][0]["min"]) + " to " + str(event["priceRanges"][0]["max"])
-            # url = event["url"]
-            event_sentence = "On " + start_date + " at " + start_time + " " + timezone + ", there is a " + name + " event. The price range is " + price_range + "."
-            event_list.append(event_sentence)
-        return event_list
+        try:
+            url = "https://app.ticketmaster.com/discovery/v2/events.json"
+            params = {
+                "apikey": os.environ["TICKET_MASTER_API_KEY"],
+                "size": 5,
+                "keyword": input
+            }
+            response = requests.get(url, params=params)
+            response.raise_for_status()
+            events = response.json()
+            event_list = []
+
+            if "_embedded" not in events:
+                return "There are no events for that search."
+
+            for event in events["_embedded"]["events"]:
+                pp.pprint(event)
+
+                start_date, start_time, timezone = "Start date not specified", "Start time not specified", "Timezone not specified"
+                min_price, max_price = "Minimum price not specified", "Maximum price not specified"
+
+                if "start" in event:
+                    start_info = event["start"]
+                    start_date = start_info.get("localDate", start_date)
+                    start_time = start_info.get("localTime", start_time)
+                    timezone = start_info.get("timezone", timezone)
+
+                if "priceRanges" in event and len(event["priceRanges"]) > 0:
+                    price_info = event["priceRanges"][0]
+                    min_price = price_info.get("min", min_price)
+                    max_price = price_info.get("max", max_price)
+
+                price_range = f"from ${min_price} to ${max_price}"
+                name = event["name"]
+                event_sentence = f"{name} will be held on {start_date} at {start_time} {timezone} and costs {price_range}."
+                event_list.append(event_sentence)
+
+            return event_list
+
+        except Exception as e:
+            print(e)
+            return "Sorry, there was an error with the search."
 
 tools = Tools().tools
