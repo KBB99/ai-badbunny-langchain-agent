@@ -8,7 +8,6 @@ from datetime import datetime
 import json
 
 now = datetime.utcnow()
-pinpoint = boto3.client('pinpoint')
 dynamodb = boto3.client('dynamodb')
 ts= TypeSerializer()
 
