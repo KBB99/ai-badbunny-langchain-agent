@@ -30,14 +30,13 @@ export class AIBadBunnyStack extends cdk.Stack {
       architecture: lambda.Architecture.ARM_64,
     });
 
+    // Please note this is an unsecure way to expose the Lambda function.
+    // In production you will need to use a secure authType or add authentication logic within the Lambda function.
     const lambdaUrl = AIMessageProcessor.addFunctionUrl({
       authType: lambda.FunctionUrlAuthType.NONE,
     });
 
-    // Add requests lambda layer to AIMessageProcessor
-    const requestsLayer = lambda.LayerVersion.fromLayerVersionArn(this, 'requestsLayer', 'arn:aws:lambda:us-east-1:377190169022:layer:requests:2');
-    AIMessageProcessor.addLayers(requestsLayer);
-
+    // This Langchain layer includes OpenAI
     const langchainLayer = lambda.LayerVersion.fromLayerVersionArn(this, 'langchainLayer', 'arn:aws:lambda:us-east-1:609061237212:layer:langchain:6');
     AIMessageProcessor.addLayers(langchainLayer);
 
