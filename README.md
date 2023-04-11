@@ -22,9 +22,10 @@ Save the API Gateway URL that is outputted by the above command. You will need i
 Once the backend is deployed, you can run the following commands to get the front-end up and running:
 
 ```bash
+cd ..
 git clone https://github.com/KBB99/ai-chat-next-amplify
-echo "LAMBDA_URL=<your-lambda-url>" > .env.local
 cd ai-chat-next-amplify
+echo "LAMBDA_URL=<your-lambda-url>" > .env.local
 npm i
 npm run dev
 ```
