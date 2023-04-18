@@ -1,5 +1,8 @@
 # AI Bad Bunny. Langchain, AWS, and LLMs
 
+Medium Article: [Creating Dynamic AI Agents With Langchain, OpenAI’s GPT-4, and AWS
+](https://medium.com/better-programming/creating-dynamic-ai-agents-with-langchain-openais-gpt-4-and-aws-building-the-ai-bad-bunny-event-74208b26f46f)
+
 To get the project up and running, you need to have the following installed:
 
 CDK
